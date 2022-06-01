@@ -1,0 +1,24 @@
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Tag Predictor</title>
+<link rel="stylesheet" th:href="@{/so/format.css}" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script th:src="@{/so/script.js}"></script>
+</head>
+<body>
+<span id="hostname" th:text="${hostname}"></span>
+<h1>SO Question Tag Predictor</h1>
+
+<form>
+    <label>
+        <textarea>Example Title</textarea>
+    </label>
+    <br />
+<button>Send</button>
+</form>
+
+<p id="result"></p>
+
+</body>
+</html>
