@@ -9,7 +9,6 @@ import so_web.data.Tags;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Objects;
 
 @Controller
 @RequestMapping("/api")
@@ -29,14 +28,18 @@ public class ApiController {
     @GetMapping("/tags")
     @ResponseBody
     public Tags getTags() {
-        System.out.println("hit tags"); // TODO remove
-        return new Tags();
+        try {
+            var url = new URI(modelHost + "/tags");
+            var c = rest.build().getForEntity(url, Tags.class);
+            return c.getBody();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @PostMapping("/predict")
     @ResponseBody
     public Prediction predict(@RequestBody Prediction prediction) {
-        System.out.println("hit predict"); // TODO remove
         metricsController.addPrediction();
         try {
             var url = new URI(modelHost + "/predict");
