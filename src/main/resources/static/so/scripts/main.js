@@ -14,15 +14,15 @@ document.addEventListener('DOMContentLoaded', function() {
     $('.modal').modal();
 
     $.ajax({
-        			type: "GET",
-        			async: false,
-        			url: "./api/tags",
-        			//data: JSON.stringify({"title": title}),
-        			contentType: "application/json",
-        			dataType: "json",
-        			success: handleResultTags,
-        			error: handleErrorTags
-        	});
+        type: "GET",
+        async: false,
+        url: "./api/tags",
+        //data: JSON.stringify({"title": title}),
+        contentType: "application/json",
+        dataType: "json",
+        success: handleResultTags,
+        error: handleErrorTags
+    });
   });
           
 function getPrediction() {
