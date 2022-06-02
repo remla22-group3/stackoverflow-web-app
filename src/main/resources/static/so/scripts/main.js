@@ -1,112 +1,198 @@
-let RemovedTags = [];
-let ExtraTags = [];
-let ReceivedTags = [];
-let Tags = [];
+var RemovedTags =[]
+var ExtraTags = []
+var ReceivedTags = []
+var Tags = []
+var LastQuery = ""
 
-$(document).ready(function() {
+document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.modal');
+    ///var instances = M.Modal.init(elems, options);
+  });
+
+  // Or with jQuery
+
+  $(document).ready(function(){
     $('.modal').modal();
 
     $.ajax({
-        type: "GET",
-        async: false,
-        url: "./api/tags",
-        contentType: "application/json",
-        dataType: "json",
-        success: handleResultTags,
-        error: handleErrorTags
-    });
-});
-          
+        			type: "GET",
+        			async: false,
+        			url: "./api/tags",
+        			//data: JSON.stringify({"title": title}),
+        			contentType: "application/json",
+        			dataType: "json",
+        			success: handleResultTags,
+        			error: handleErrorTags
+        	});
+
+        let InputsearchElement1 = document.getElementById("search");
+        InputsearchElement1.addEventListener("keypress", function(event) {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            getPrediction();
+          }
+        });
+
+        let InputsearchElement2 = document.getElementById("searchTags");
+                InputsearchElement2.addEventListener("keypress", function(event) {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    SearchTagsManual();
+                  }
+                });
+  });
+
+
+
 function getPrediction() {
     /// clear tags in UI
     let predictionElement = document.getElementById("predictionElement");
     predictionElement.innerHTML = '';
-    
+
     ///reset tag lists
-    ReceivedTags = [];
-    ExtraTags = [];
-    RemovedTags =[];
+    ReceivedTags = []
+    ExtraTags = []
+    RemovedTags =[]
 
     let title = document.getElementById("search").value;
-
+    LastQuery = title;
     // Add new predicted tags
     $.ajax({
-        type: "POST",
-        async: false,
-        url: "./api/predict",
-        data: JSON.stringify({"title": title}),
-        contentType: "application/json",
-        dataType: "json",
-        success: handleResult,
-        error: handleErrorPredict
-    });
-
-    let predictionArr = ReceivedTags;
-    predictionArr.push("More +");
-
-    for (const predictionElem of predictionArr) {
-        let a;
-        let span;
-        if (predictionElem === "More +") {
-            a = document.createElement("a");
-            a.setAttribute("href","#modal1");
-            a.setAttribute("class","modal-trigger");
+    			type: "POST",
+    			async: false,
+    			url: "./api/predict",
+    			data: JSON.stringify({"title": title}),
+    			contentType: "application/json",
+    			dataType: "json",
+    			success: handleResult,
+    			error: handleError
+    	})
 
 
-            span = document.createElement("span");
-            a.appendChild(span);
-            span.innerHTML = predictionElem;
-            predictionElement.appendChild(a);
-        }
-        else {
-            a = document.createElement("a");
-            const tagTemp = String(predictionElem);
-            a.setAttribute("id",tagTemp);
+    let arrPreds = ["More +"];
+    arrPreds.push(...ReceivedTags);
+    //.push();
 
-            span = document.createElement("span");
-            a.appendChild(span);
-            span.innerHTML = Tags[predictionElem] + " ";
+    //let ul = document.getElementById("id_ul");
+    let i =0;
 
-            const spanX = document.createElement("a");
-            span.appendChild(spanX);
-            spanX.innerHTML = "x";
-            const removeTagFunc = "removeTag("+tagTemp+")";
-            spanX.setAttribute("onclick", removeTagFunc);
-            spanX.setAttribute("href","#modal1");
 
-            predictionElement.appendChild(a);
-        }
+    arrPreds.map(arr=>{
+
+    if(arr == "More +")
+    {
+        var a = document.createElement("a");
+        a.setAttribute("href","#modal1");
+        a.setAttribute("class","modal-trigger");
+
+
+        var span = document.createElement("span");
+        a.appendChild(span);
+        span.innerHTML = arrPreds[i];
+        predictionElement.appendChild(a);
+
     }
-}
+    else{
+        var a = document.createElement("a");
+        tagTemp = String(arrPreds[i])
+        a.setAttribute("id",tagTemp);
+
+        var span = document.createElement("span");
+        a.appendChild(span);
+        span.innerHTML = Tags[arrPreds[i]] + " ";
+
+        var spanX = document.createElement("a");
+        span.appendChild(spanX);
+        spanX.innerHTML = "x";
+        //spanX.onclick(removeTag(tagTemp));
+        removetagf = "removeTag("+tagTemp+")";
+        spanX.setAttribute("onclick",removetagf);
+        spanX.setAttribute("href","#modal1");
+
+        predictionElement.appendChild(a);
+    }
+
+    i++;
+
+    })
+  }
 
 function handleResult(res) {
-    ReceivedTags = res.result
-}
+		ReceivedTags = res.result
+		console.log(ReceivedTags)
+	};
 
-function handleErrorPredict(_) {
-    console.log("Error in predict.");
-}
+function handleError(_) {
+    		console.log("errrrror in predict")
+    };
 
 function handleResultTags(res) {
-    Tags = res.result;
-}
+		Tags = res.result
+		console.log(Tags)
+	};
 
 function handleErrorTags(_) {
-    console.log("Error in tags.");
-}
+    		console.log("errrrror in fetching tag pairs")
+    };
 
-function removeTag(tagid) {
-    const elem = document.getElementById(tagid.id);
+  function removeTag(tagid) {
+    var elem = document.getElementById(tagid);
     elem.remove();
-    RemovedTags.push(tagid.id);
-}
+    if(!ExtraTags.includes(tagid))
+    {
+        RemovedTags.push(tagid);
+    }
+    else{
+        for(var r=0; r < ExtraTags.length; r++){
+               if(ExtraTags[r]==ToInsertId){
+                  ExtraTags.splice(r, 1);
+               }
+        }
+    }
+    return;
+  };
 
-function SearchTagsManual() {
+  function addTagManual1(TagManual1){
+    TagManual = TagManual1.id;
+    let ManualTagElement = document.getElementById(TagManual);
+    ToInsertId = TagManual.split("_")[1];
+    ManualTagElement.remove();
+
+    for(var r=0; r < RemovedTags.length; r++){
+       if(RemovedTags[r]==ToInsertId){
+          RemovedTags.splice(r, 1);
+       }
+    }
+
+    ExtraTags.push(parseInt(ToInsertId,10));
+
+    let predictionElement = document.getElementById("predictionElement");
+    var a = document.createElement("a");
+    tagTemp = String(ToInsertId)
+    a.setAttribute("id",tagTemp);
+
+    var span = document.createElement("span");
+    a.appendChild(span);
+    span.innerHTML = Tags[ToInsertId] + " ";
+
+    var spanX = document.createElement("a");
+    span.appendChild(spanX);
+    spanX.innerHTML = "x";
+
+    removetagf = "removeTag("+tagTemp+")";
+    spanX.setAttribute("onclick",removetagf);
+    spanX.setAttribute("href","#modal1");
+
+    predictionElement.appendChild(a);
+  };
+
+
+  function SearchTagsManual(){
     let searchedTag = document.getElementById("searchTags").value;
-    let matchedId = [];
-    let matchedName = [];
-    for (let i = 0; i < Tags.length; i++) {
-        if (Tags[i].includes(searchedTag)) {
+    matchedId = []
+    matchedName = []
+    for(var i=0; i< Tags.length; i++){
+        if(Tags[i].includes(searchedTag) && (!ReceivedTags.includes(i) || RemovedTags.includes(i)) && !ExtraTags.includes(i) ){
             matchedId.push(i);
             matchedName.push(Tags[i]);
         }
@@ -115,22 +201,33 @@ function SearchTagsManual() {
     let ManualTagElement = document.getElementById("ManualTagElement");
     ManualTagElement.innerHTML = '';
 
-    for (let i = 0; i < matchedId.length; i++) {
-        const a = document.createElement("a");
-        let tagTemp = "TagManual" + String(matchedId[i]);
-        a.setAttribute("id", tagTemp);
+    var j = 0;
 
-        const span = document.createElement("span");
-        a.appendChild(span);
-        span.innerHTML = matchedName[i] + " ";
+    for(var j=0; j<matchedId.length; j++)
+    {
+            var a = document.createElement("a");
+            tagTemp = "TagManual_"+String(matchedId[j])
+            a.setAttribute("id",tagTemp);
 
-        const spanX = document.createElement("a");
-        span.appendChild(spanX);
-        spanX.innerHTML = "+";
-        //spanX.onclick(removeTag(tagTemp));
-        const addTagManual = "addTagManual(" + tagTemp + ")";
-        spanX.setAttribute("onclick", addTagManual);
+            var span = document.createElement("span");
+            a.appendChild(span);
+            span.innerHTML = matchedName[j] + " ";
 
-        ManualTagElement.appendChild(a);
+            var aX = document.createElement("a");
+            span.appendChild(aX);
+            aX.innerHTML = "+";
+            addTagManual = "addTagManual1("+tagTemp+")";
+            aX.setAttribute("onclick",addTagManual);
+
+            ManualTagElement.appendChild(a);
     }
-}
+  };
+
+  function ModalSearchClose(){
+      let searchedTag = document.getElementById("searchTags").value;
+      searchTags.value = '';
+      let ManualTagElement = document.getElementById("ManualTagElement");
+      ManualTagElement.innerHTML = '';
+  }
+
+

@@ -971,7 +971,7 @@ legend {
   background-position: center center;
   padding: 0px;
   background: #d9d7d7;
-  border-radius: 48px;
+  /*border-radius: 48px;*/
 }
 
 .modal .modal-content {
@@ -982,14 +982,14 @@ legend {
 
 .modalclass1 .inner-form {
   width: 100%;
-  margin-bottom: 17px;
+  margin-bottom: 0px;
 }
 
 .modalclass1 .inner-form .input-field {
-  height: 50px;
+  /*height: 50px;*/
   width: 83%;
   position: relative;
-  padding-bottom: 13px;
+  padding-bottom: 0px;
 }
 
 
@@ -1001,7 +1001,7 @@ legend {
   align-items: center;
   position: absolute;
   left: 0;
-  height: 100%;
+  height: 98%;
   background: transparent;
   border: 0;
   padding: 0;
@@ -1023,9 +1023,32 @@ legend {
   padding: 10px 32px 10px 70px;
   font-size: 18px;
   color: #666;
-  border-radius: 34px;
+  /*border-radius: 34px;*/
 }
 
 a:link {
   color: white;
+}
+
+.modal{
+max-height: 90%;
+}
+
+.modal-body{
+background: #d9d7d7;
+padding-left: 5px;
+padding-right: 5px;
+}
+
+.modal-body .suggestion-wrap span {
+    font-size: 14px;
+    font-family: 'Helvetica', sans-serif;
+    display: inline-block;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 0 15px;
+    line-height: 32px;
+    color: #fff;
+    border-radius: 16px;
+    margin-right: 10px;
+    margin-bottom: 10px;
 }
