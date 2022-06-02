@@ -1,7 +1,7 @@
-package myweb.data;
+package so_web.data;
 
 @SuppressWarnings("unused")
 public class Prediction {
 	public String title;
-	public String[] result;
+	public int[] result;
 }
