@@ -1,29 +1,21 @@
-var RemovedTags =[]
-var ExtraTags = []
-var ReceivedTags = []
-var Tags = []
+let RemovedTags = [];
+let ExtraTags = [];
+let ReceivedTags = [];
+let Tags = [];
 
-document.addEventListener('DOMContentLoaded', function() {
-    var elems = document.querySelectorAll('.modal');
-    ///var instances = M.Modal.init(elems, options);
-  });
-
-  // Or with jQuery
-
-  $(document).ready(function(){
+$(document).ready(function() {
     $('.modal').modal();
 
     $.ajax({
         type: "GET",
         async: false,
         url: "./api/tags",
-        //data: JSON.stringify({"title": title}),
         contentType: "application/json",
         dataType: "json",
         success: handleResultTags,
         error: handleErrorTags
     });
-  });
+});
           
 function getPrediction() {
     /// clear tags in UI
@@ -31,102 +23,93 @@ function getPrediction() {
     predictionElement.innerHTML = '';
     
     ///reset tag lists
-    ReceivedTags = []
-    ExtraTags = []
-    RemovedTags =[]
+    ReceivedTags = [];
+    ExtraTags = [];
+    RemovedTags =[];
 
     let title = document.getElementById("search").value;
 
     // Add new predicted tags
     $.ajax({
-    			type: "POST",
-    			async: false,
-    			url: "./api/predict",
-    			data: JSON.stringify({"title": title}),
-    			contentType: "application/json",
-    			dataType: "json",
-    			success: handleResult,
-    			error: handleErrorPredict
-    	})
+        type: "POST",
+        async: false,
+        url: "./api/predict",
+        data: JSON.stringify({"title": title}),
+        contentType: "application/json",
+        dataType: "json",
+        success: handleResult,
+        error: handleErrorPredict
+    });
 
+    let predictionArr = ReceivedTags;
+    predictionArr.push("More +");
 
-    let arrPreds = ReceivedTags;
-    arrPreds.push("More +");
-
-    //let ul = document.getElementById("id_ul");
     let i =0;
+    predictionArr.map(arr=>{
+        let a;
+        let span;
+        if(arr === "More +") {
+            a = document.createElement("a");
+            a.setAttribute("href","#modal1");
+            a.setAttribute("class","modal-trigger");
 
 
-    arrPreds.map(arr=>{
-    
-    if(arr == "More +")
-    {
-        var a = document.createElement("a");
-        a.setAttribute("href","#modal1");
-        a.setAttribute("class","modal-trigger");
+            span = document.createElement("span");
+            a.appendChild(span);
+            span.innerHTML = predictionArr[i];
+            predictionElement.appendChild(a);
+        }
+        else {
+            a = document.createElement("a");
+            const tagTemp = String(predictionArr[i]);
+            a.setAttribute("id",tagTemp);
 
+            span = document.createElement("span");
+            a.appendChild(span);
+            span.innerHTML = Tags[predictionArr[i]] + " ";
 
-        var span = document.createElement("span");
-        a.appendChild(span);
-        span.innerHTML = arrPreds[i];
-        predictionElement.appendChild(a);
-       
-    }
-    else{
-        var a = document.createElement("a");
-        tagTemp = String(arrPreds[i])
-        a.setAttribute("id",tagTemp);
+            const spanX = document.createElement("a");
+            span.appendChild(spanX);
+            spanX.innerHTML = "x";
+            const removeTagFunc = "removeTag("+tagTemp+")";
+            spanX.setAttribute("onclick", removeTagFunc);
+            spanX.setAttribute("href","#modal1");
 
-        var span = document.createElement("span");
-        a.appendChild(span);
-        span.innerHTML = Tags[arrPreds[i]] + " ";
+            predictionElement.appendChild(a);
+        }
 
-        var spanX = document.createElement("a");
-        span.appendChild(spanX);
-        spanX.innerHTML = "x";
-        //spanX.onclick(removeTag(tagTemp));
-        removetagf = "removeTag("+tagTemp+")";
-        spanX.setAttribute("onclick",removetagf);
-        spanX.setAttribute("href","#modal1");
-
-        predictionElement.appendChild(a);
-    }
-
-    i++;
-    
+        i++;
     })
-  }
+}
 
-    function handleResult(res) {
-		ReceivedTags = res.result
-	}
+function handleResult(res) {
+    ReceivedTags = res.result
+}
 
-	function handleErrorPredict(_) {
-        console.log("Error in predict.")
-    }
+function handleErrorPredict(_) {
+    console.log("Error in predict.");
+}
 
 function handleResultTags(res) {
-		Tags = res.result
-	}
+    Tags = res.result;
+}
 
-	function handleErrorTags(_) {
-        console.log("Error in tags.")
-    }
+function handleErrorTags(_) {
+    console.log("Error in tags.");
+}
 
-  function removeTag(tagid) {
-    //tagid1 = String(tagid);
-    var elem = document.getElementById(tagid.id);
+function removeTag(tagid) {
+    const elem = document.getElementById(tagid.id);
     elem.remove();
     RemovedTags.push(tagid.id);
-    return;
-  }
+}
 
-  function SearchTagsManual() {
+function SearchTagsManual() {
     let searchedTag = document.getElementById("searchTags").value;
-    matchedId = []
-    matchedName = []
-    for(var i=0; i< Tags.length; i++){
-        if(Tags[i].includes(searchedTag)){
+    let matchedId = [];
+    let matchedName = [];
+    for (let i=0; i< Tags.length; i++) {
+        if (Tags[i].includes(searchedTag)) {
             matchedId.push(i);
             matchedName.push(Tags[i]);
         }
@@ -135,26 +118,22 @@ function handleResultTags(res) {
     let ManualTagElement = document.getElementById("ManualTagElement");
     ManualTagElement.innerHTML = '';
 
-    for(var j=0; j<matchedId.length; j++)
-    {
-        var a = document.createElement("a");
-        tagTemp = "TagManual"+String(matchedId[j])
-        a.setAttribute("id",tagTemp);
+    for (let j = 0; j < matchedId.length; j++) {
+        const a = document.createElement("a");
+        let tagTemp = "TagManual" + String(matchedId[j]);
+        a.setAttribute("id", tagTemp);
 
-        var span = document.createElement("span");
+        const span = document.createElement("span");
         a.appendChild(span);
         span.innerHTML = matchedName[j] + " ";
 
-        var spanX = document.createElement("a");
+        const spanX = document.createElement("a");
         span.appendChild(spanX);
         spanX.innerHTML = "+";
         //spanX.onclick(removeTag(tagTemp));
-        addTagManual = "addTagManual("+tagTemp+")";
-        spanX.setAttribute("onclick",addTagManual);
+        const addTagManual = "addTagManual(" + tagTemp + ")";
+        spanX.setAttribute("onclick", addTagManual);
 
         ManualTagElement.appendChild(a);
     }
-
-
-  }
-
+}
