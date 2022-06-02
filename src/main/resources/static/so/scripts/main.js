@@ -46,7 +46,7 @@ function getPrediction() {
     			contentType: "application/json",
     			dataType: "json",
     			success: handleResult,
-    			error: handleError
+    			error: handleErrorPredict
     	})
 
 
@@ -99,21 +99,19 @@ function getPrediction() {
 
     function handleResult(res) {
 		ReceivedTags = res.result
-		console.log(ReceivedTags)
 	}
 
-	function handleError(_) {
-    		console.log("errrrror in predict")
-    	}
+	function handleErrorPredict(_) {
+        console.log("Error in predict.")
+    }
 
 function handleResultTags(res) {
 		Tags = res.result
-		console.log(Tags)
 	}
 
 	function handleErrorTags(_) {
-    		console.log("errrrror in fetching tag pairs")
-    	}
+        console.log("Error in tags.")
+    }
 
   function removeTag(tagid) {
     //tagid1 = String(tagid);
@@ -123,7 +121,7 @@ function handleResultTags(res) {
     return;
   }
 
-  function SearchTagsManual(){
+  function SearchTagsManual() {
     let searchedTag = document.getElementById("searchTags").value;
     matchedId = []
     matchedName = []
@@ -137,30 +135,25 @@ function handleResultTags(res) {
     let ManualTagElement = document.getElementById("ManualTagElement");
     ManualTagElement.innerHTML = '';
 
-    var j = 0;
-    //matchedId.map(arr=>{
     for(var j=0; j<matchedId.length; j++)
     {
-            var a = document.createElement("a");
-            tagTemp = "TagManual"+String(matchedId[j])
-            a.setAttribute("id",tagTemp);
+        var a = document.createElement("a");
+        tagTemp = "TagManual"+String(matchedId[j])
+        a.setAttribute("id",tagTemp);
 
-            var span = document.createElement("span");
-            a.appendChild(span);
-            span.innerHTML = matchedName[j] + " ";
+        var span = document.createElement("span");
+        a.appendChild(span);
+        span.innerHTML = matchedName[j] + " ";
 
-            var spanX = document.createElement("a");
-            span.appendChild(spanX);
-            spanX.innerHTML = "+";
-            //spanX.onclick(removeTag(tagTemp));
-            addTagManual = "addTagManual("+tagTemp+")";
-            spanX.setAttribute("onclick",addTagManual);
+        var spanX = document.createElement("a");
+        span.appendChild(spanX);
+        spanX.innerHTML = "+";
+        //spanX.onclick(removeTag(tagTemp));
+        addTagManual = "addTagManual("+tagTemp+")";
+        spanX.setAttribute("onclick",addTagManual);
 
-            ManualTagElement.appendChild(a);
+        ManualTagElement.appendChild(a);
     }
-       // j++;
-
-      //})
 
 
   }

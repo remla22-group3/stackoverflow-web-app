@@ -1,4 +1,4 @@
-<html>
+<html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,20 +7,18 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Poppins:400,800" rel="stylesheet" />
     
-    <script th:src="@{/so/extention/choices.js}"></script>
-    <script th:src="@{/so/extention/custom-materialize.js}"></script>
-    <script th:src="@{/so/extention/flatpickr.js}"></script>
+    <script th:src="@{/so/scripts/choices.js}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
-    <link th:href="@{/so/materialize.css}" rel="stylesheet" />
-    <link th:href="@{/so/materialize.min.css}" rel="stylesheet" />
-    <link th:href="@{/so/main.css}" rel="stylesheet" />
-    <script th:src="@{/so/main.js}"></script>
-      </head>
+    <link th:href="@{/so/styles/materialize.min.css}" rel="stylesheet" />
+    <link th:href="@{/so/styles/main.css}" rel="stylesheet" />
+    <script th:src="@{/so/scripts/main.js}"></script>
+    <title>Stack Overflow Tag Generator</title>
+  </head>
   <body>
     <div class="s006">
       <form>
         <fieldset>
-          <legend>Stackoverflow Tag Generator</legend>
+          <legend>Stack Overflow Tag Generator</legend>
           <div class="inner-form">
             <div class="input-field">
               <button class="btn-search" type="button">
@@ -56,14 +54,14 @@
               </div>
             </div>
             <div id="ManualTagElement" class="suggestion-wrap">
+            </div>
           </fieldset>
         </form>
       </div>
       </div>
       <div class="modal-footer">
-        <!-- <a href="#!" class="modal-close waves-effect waves-red btn-flat">Disagree</a> -->
         <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
       </div>
     </div>
-</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+</body>
 </html>
