@@ -44,11 +44,10 @@ function getPrediction() {
     let predictionArr = ReceivedTags;
     predictionArr.push("More +");
 
-    let i =0;
-    predictionArr.map(arr=>{
+    for (const predictionElem of predictionArr) {
         let a;
         let span;
-        if(arr === "More +") {
+        if (predictionElem === "More +") {
             a = document.createElement("a");
             a.setAttribute("href","#modal1");
             a.setAttribute("class","modal-trigger");
@@ -56,17 +55,17 @@ function getPrediction() {
 
             span = document.createElement("span");
             a.appendChild(span);
-            span.innerHTML = predictionArr[i];
+            span.innerHTML = predictionElem;
             predictionElement.appendChild(a);
         }
         else {
             a = document.createElement("a");
-            const tagTemp = String(predictionArr[i]);
+            const tagTemp = String(predictionElem);
             a.setAttribute("id",tagTemp);
 
             span = document.createElement("span");
             a.appendChild(span);
-            span.innerHTML = Tags[predictionArr[i]] + " ";
+            span.innerHTML = Tags[predictionElem] + " ";
 
             const spanX = document.createElement("a");
             span.appendChild(spanX);
@@ -77,9 +76,7 @@ function getPrediction() {
 
             predictionElement.appendChild(a);
         }
-
-        i++;
-    })
+    }
 }
 
 function handleResult(res) {
@@ -108,7 +105,7 @@ function SearchTagsManual() {
     let searchedTag = document.getElementById("searchTags").value;
     let matchedId = [];
     let matchedName = [];
-    for (let i=0; i< Tags.length; i++) {
+    for (let i = 0; i < Tags.length; i++) {
         if (Tags[i].includes(searchedTag)) {
             matchedId.push(i);
             matchedName.push(Tags[i]);
@@ -118,14 +115,14 @@ function SearchTagsManual() {
     let ManualTagElement = document.getElementById("ManualTagElement");
     ManualTagElement.innerHTML = '';
 
-    for (let j = 0; j < matchedId.length; j++) {
+    for (let i = 0; i < matchedId.length; i++) {
         const a = document.createElement("a");
-        let tagTemp = "TagManual" + String(matchedId[j]);
+        let tagTemp = "TagManual" + String(matchedId[i]);
         a.setAttribute("id", tagTemp);
 
         const span = document.createElement("span");
         a.appendChild(span);
-        span.innerHTML = matchedName[j] + " ";
+        span.innerHTML = matchedName[i] + " ";
 
         const spanX = document.createElement("a");
         span.appendChild(spanX);
