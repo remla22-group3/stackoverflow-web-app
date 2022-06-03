@@ -144,7 +144,7 @@ function handleErrorTags(_) {
     }
     else{
         for(var r=0; r < ExtraTags.length; r++){
-               if(ExtraTags[r]==ToInsertId){
+               if(ExtraTags[r]==tagid){
                   ExtraTags.splice(r, 1);
                }
         }
@@ -225,7 +225,7 @@ function handleErrorTags(_) {
 
   function ModalSearchClose(){
       let searchedTag = document.getElementById("searchTags").value;
-      searchTags.value = '';
+      searchedTag.value = '';
       let ManualTagElement = document.getElementById("ManualTagElement");
       ManualTagElement.innerHTML = '';
   }
