@@ -1,48 +1,38 @@
-var RemovedTags =[]
-var ExtraTags = []
-var ReceivedTags = []
-var Tags = []
-var LastQuery = ""
+let RemovedTags = [];
+let ExtraTags = [];
+let ReceivedTags = [];
+let Tags = [];
+let LastQuery = "";
 
-document.addEventListener('DOMContentLoaded', function() {
-    var elems = document.querySelectorAll('.modal');
-    ///var instances = M.Modal.init(elems, options);
-  });
-
-  // Or with jQuery
-
-  $(document).ready(function(){
+$(document).ready(function() {
     $('.modal').modal();
 
     $.ajax({
-        			type: "GET",
-        			async: false,
-        			url: "./api/tags",
-        			//data: JSON.stringify({"title": title}),
-        			contentType: "application/json",
-        			dataType: "json",
-        			success: handleResultTags,
-        			error: handleErrorTags
-        	});
+        type: "GET",
+        async: false,
+        url: "./api/tags",
+        contentType: "application/json",
+        dataType: "json",
+        success: handleResultTags,
+        error: handleErrorTags
+    });
 
-        let InputsearchElement1 = document.getElementById("search");
-        InputsearchElement1.addEventListener("keypress", function(event) {
-          if (event.key === "Enter") {
+    let InputSearchElement1 = document.getElementById("search");
+    InputSearchElement1.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
             event.preventDefault();
             getPrediction();
-          }
-        });
+        }
+    });
 
-        let InputsearchElement2 = document.getElementById("searchTags");
-                InputsearchElement2.addEventListener("keypress", function(event) {
-                  if (event.key === "Enter") {
-                    event.preventDefault();
-                    SearchTagsManual();
-                  }
-                });
-  });
-
-
+    let InputSearchElement2 = document.getElementById("searchTags");
+        InputSearchElement2.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            SearchTagsManual();
+        }
+    });
+});
 
 function getPrediction() {
     /// clear tags in UI
@@ -50,149 +40,138 @@ function getPrediction() {
     predictionElement.innerHTML = '';
 
     ///reset tag lists
-    ReceivedTags = []
-    ExtraTags = []
-    RemovedTags =[]
+    ReceivedTags = [];
+    ExtraTags = [];
+    RemovedTags =[];
 
     let title = document.getElementById("search").value;
     LastQuery = title;
     // Add new predicted tags
     $.ajax({
-    			type: "POST",
-    			async: false,
-    			url: "./api/predict",
-    			data: JSON.stringify({"title": title}),
-    			contentType: "application/json",
-    			dataType: "json",
-    			success: handleResult,
-    			error: handleError
-    	})
-
-
-    let arrPreds = ["More +"];
-    arrPreds.push(...ReceivedTags);
-    //.push();
-
-    //let ul = document.getElementById("id_ul");
-    let i =0;
-
-
-    arrPreds.map(arr=>{
-
-    if(arr == "More +")
-    {
-        var a = document.createElement("a");
-        a.setAttribute("href","#modal1");
-        a.setAttribute("class","modal-trigger");
-
-
-        var span = document.createElement("span");
-        a.appendChild(span);
-        span.innerHTML = arrPreds[i];
-        predictionElement.appendChild(a);
-
-    }
-    else{
-        var a = document.createElement("a");
-        tagTemp = String(arrPreds[i])
-        a.setAttribute("id",tagTemp);
-
-        var span = document.createElement("span");
-        a.appendChild(span);
-        span.innerHTML = Tags[arrPreds[i]] + " ";
-
-        var spanX = document.createElement("a");
-        span.appendChild(spanX);
-        spanX.innerHTML = "x";
-        //spanX.onclick(removeTag(tagTemp));
-        removetagf = "removeTag("+tagTemp+")";
-        spanX.setAttribute("onclick",removetagf);
-        spanX.setAttribute("href","#modal1");
-
-        predictionElement.appendChild(a);
-    }
-
-    i++;
-
+        type: "POST",
+        async: false,
+        url: "./api/predict",
+        data: JSON.stringify({"title": title}),
+        contentType: "application/json",
+        dataType: "json",
+        success: handleResult,
+        error: handleErrorPredict
     })
-  }
 
-function handleResult(res) {
-		ReceivedTags = res.result
-		console.log(ReceivedTags)
-	};
 
-function handleError(_) {
-    		console.log("errrrror in predict")
-    };
+    let predArr = ["More +"];
+    predArr.push(...ReceivedTags);
 
-function handleResultTags(res) {
-		Tags = res.result
-		console.log(Tags)
-	};
+    for (const elem of predArr) {
+        let a;
+        let span;
+        if (elem === "More +") {
+            a = document.createElement("a");
+            a.setAttribute("href","#modal1");
+            a.setAttribute("class","modal-trigger");
 
-function handleErrorTags(_) {
-    		console.log("errrrror in fetching tag pairs")
-    };
 
-  function removeTag(tagid) {
-    var elem = document.getElementById(tagid);
-    elem.remove();
-    if(!ExtraTags.includes(tagid))
-    {
-        RemovedTags.push(tagid);
-    }
-    else{
-        for(var r=0; r < ExtraTags.length; r++){
-               if(ExtraTags[r]==tagid){
-                  ExtraTags.splice(r, 1);
-               }
+            span = document.createElement("span");
+            a.appendChild(span);
+            span.innerHTML = elem;
+            predictionElement.appendChild(a);
+
+        }
+        else {
+            a = document.createElement("a");
+            const tagTemp = String(elem);
+            a.setAttribute("id",tagTemp);
+
+            span = document.createElement("span");
+            a.appendChild(span);
+            span.innerHTML = Tags[elem] + " ";
+
+            const spanX = document.createElement("a");
+            span.appendChild(spanX);
+            spanX.innerHTML = "x";
+            const removeTagF = "removeTag("+tagTemp+")";
+            spanX.setAttribute("onclick",removeTagF);
+            spanX.setAttribute("href","#modal1");
+
+            predictionElement.appendChild(a);
         }
     }
-    return;
-  };
+}
 
-  function addTagManual1(TagManual1){
-    TagManual = TagManual1.id;
+function handleResult(res) {
+    ReceivedTags = res.result;
+}
+
+function handleErrorPredict(_) {
+    console.log("Error in predict.");
+}
+
+function handleResultTags(res) {
+    Tags = res.result;
+}
+
+function handleErrorTags(_) {
+    console.log("Error in tags.");
+}
+
+function removeTag(tagId) {
+    const elem = document.getElementById(tagId);
+    elem.remove();
+    if (!ExtraTags.includes(tagId)) {
+        RemovedTags.push(tagId);
+    }
+    else {
+        for (let r = 0; r < ExtraTags.length; r++) {
+            if (ExtraTags[r] === tagId) {
+                ExtraTags.splice(r, 1);
+            }
+        }
+    }
+}
+
+function addTagManual1(TagManual1) {
+    let TagManual = TagManual1.id;
     let ManualTagElement = document.getElementById(TagManual);
-    ToInsertId = TagManual.split("_")[1];
+    let ToInsertId = TagManual.split("_")[1];
     ManualTagElement.remove();
 
-    for(var r=0; r < RemovedTags.length; r++){
-       if(RemovedTags[r]==ToInsertId){
-          RemovedTags.splice(r, 1);
-       }
+    for (let r = 0; r < RemovedTags.length; r++) {
+        if (RemovedTags[r] === ToInsertId){
+            RemovedTags.splice(r, 1);
+        }
     }
 
     ExtraTags.push(parseInt(ToInsertId,10));
 
     let predictionElement = document.getElementById("predictionElement");
-    var a = document.createElement("a");
-    tagTemp = String(ToInsertId)
+    const a = document.createElement("a");
+    let tagTemp = String(ToInsertId)
     a.setAttribute("id",tagTemp);
 
-    var span = document.createElement("span");
+    const span = document.createElement("span");
     a.appendChild(span);
     span.innerHTML = Tags[ToInsertId] + " ";
 
-    var spanX = document.createElement("a");
+    const spanX = document.createElement("a");
     span.appendChild(spanX);
     spanX.innerHTML = "x";
 
-    removetagf = "removeTag("+tagTemp+")";
-    spanX.setAttribute("onclick",removetagf);
+    const removeTagF = "removeTag("+tagTemp+")";
+    spanX.setAttribute("onclick",removeTagF);
     spanX.setAttribute("href","#modal1");
 
     predictionElement.appendChild(a);
-  };
+}
 
-
-  function SearchTagsManual(){
+function SearchTagsManual() {
     let searchedTag = document.getElementById("searchTags").value;
-    matchedId = []
-    matchedName = []
-    for(var i=0; i< Tags.length; i++){
-        if(Tags[i].includes(searchedTag) && (!ReceivedTags.includes(i) || RemovedTags.includes(i)) && !ExtraTags.includes(i) ){
+    let matchedId = [];
+    let matchedName = [];
+    for (let i = 0; i< Tags.length; i++) {
+        if (Tags[i].includes(searchedTag) &&
+            (!ReceivedTags.includes(i) || RemovedTags.includes(i)) &&
+            !ExtraTags.includes(i)) {
+
             matchedId.push(i);
             matchedName.push(Tags[i]);
         }
@@ -201,33 +180,28 @@ function handleErrorTags(_) {
     let ManualTagElement = document.getElementById("ManualTagElement");
     ManualTagElement.innerHTML = '';
 
-    var j = 0;
+    for (let j = 0; j < matchedId.length; j++) {
+        const a = document.createElement("a");
+        const tagTemp = "TagManual_"+String(matchedId[j]);
+        a.setAttribute("id",tagTemp);
 
-    for(var j=0; j<matchedId.length; j++)
-    {
-            var a = document.createElement("a");
-            tagTemp = "TagManual_"+String(matchedId[j])
-            a.setAttribute("id",tagTemp);
+        const span = document.createElement("span");
+        a.appendChild(span);
+        span.innerHTML = matchedName[j] + " ";
 
-            var span = document.createElement("span");
-            a.appendChild(span);
-            span.innerHTML = matchedName[j] + " ";
+        const aX = document.createElement("a");
+        span.appendChild(aX);
+        aX.innerHTML = "+";
+        const addTagManual = "addTagManual1("+tagTemp+")";
+        aX.setAttribute("onclick",addTagManual);
 
-            var aX = document.createElement("a");
-            span.appendChild(aX);
-            aX.innerHTML = "+";
-            addTagManual = "addTagManual1("+tagTemp+")";
-            aX.setAttribute("onclick",addTagManual);
-
-            ManualTagElement.appendChild(a);
+        ManualTagElement.appendChild(a);
     }
-  };
+}
 
-  function ModalSearchClose(){
-      let searchedTag = document.getElementById("searchTags").value;
-      searchedTag.value = '';
-      let ManualTagElement = document.getElementById("ManualTagElement");
-      ManualTagElement.innerHTML = '';
-  }
-
-
+function ModalSearchClose() {
+    let searchedTag = document.getElementById("searchTags").value;
+    searchedTag.value = '';
+    let ManualTagElement = document.getElementById("ManualTagElement");
+    ManualTagElement.innerHTML = '';
+}
