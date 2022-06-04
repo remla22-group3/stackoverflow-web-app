@@ -1052,3 +1052,30 @@ padding-right: 5px;
     margin-right: 10px;
     margin-bottom: 10px;
 }
+
+/*css addedtagmodel*/
+.s006 form .suggestion-wrap span.addedtagmodel{
+background : rgba(61, 176, 73,0.6);
+}
+
+.s006 form .suggestion-wrap span.addedtagselection{
+background : rgba(245, 114, 27, 0.6);
+}
+
+.s006 form .suggestion-wrap span.addedtagmanual{
+background : rgba(8, 112, 140, 0.6);
+}
+
+.x{
+        HEIGHT: 26px;
+        width: 73px;
+        padding-top: 2px;
+        background: #1f971f;
+        border-radius: 55px;
+        margin-top: 4px;
+        margin-left: 7px;
+        color: white;
+        border: none;
+        margin-right: 5%;
+        float: right;
+    }
