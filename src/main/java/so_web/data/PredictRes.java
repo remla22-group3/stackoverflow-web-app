@@ -1,7 +1,6 @@
 package so_web.data;
 
-@SuppressWarnings("unused")
-public class Prediction {
+public class PredictRes {
 	public String title;
 	public int[] result;
 }

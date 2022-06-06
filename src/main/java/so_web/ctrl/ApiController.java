@@ -4,8 +4,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import so_web.data.Prediction;
-import so_web.data.Tags;
+import so_web.data.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -15,38 +14,40 @@ import java.net.URISyntaxException;
 public class ApiController {
 
     private final RestTemplateBuilder rest;
-    private final String modelHost;
-    private final MetricsController metricsController;
+    private final URI tagsURI, predictURI, submitURI;
 
-    public ApiController(RestTemplateBuilder rest, Environment env, MetricsController metricsController) {
+    public ApiController(RestTemplateBuilder rest, Environment env) throws URISyntaxException {
         super();
         this.rest = rest;
-        this.modelHost = env.getProperty("MODEL_HOST");
-        this.metricsController = metricsController;
+        String modelHost = env.getProperty("MODEL_HOST");
+        tagsURI = new URI(modelHost + "/tags");
+        predictURI = new URI(modelHost + "/predict");
+        submitURI = new URI(modelHost + "/submit");
     }
 
     @GetMapping("/tags")
     @ResponseBody
     public Tags getTags() {
-        try {
-            var url = new URI(modelHost + "/tags");
-            var c = rest.build().getForEntity(url, Tags.class);
-            return c.getBody();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+       return rest.build().getForEntity(tagsURI, Tags.class).getBody();
     }
 
     @PostMapping("/predict")
     @ResponseBody
-    public Prediction predict(@RequestBody Prediction prediction) {
-        metricsController.addPrediction();
-        try {
-            var url = new URI(modelHost + "/predict");
-            var c = rest.build().postForEntity(url, prediction, Prediction.class);
-            return c.getBody();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+    public PredictRes predict(@RequestBody PredictReq predictReq) {
+        Metrics.getInstance().incrementPredictions();
+        return getPrediction(predictReq);
+    }
+
+    private PredictRes getPrediction(PredictReq predictReq) {
+        return rest.build().postForEntity(predictURI, predictReq, PredictRes.class).getBody();
+    }
+
+    @PutMapping("/submit")
+    @ResponseBody
+    public Void submit(@RequestBody PredictRes userPredict) {
+        PredictStats stats =
+                rest.build().postForEntity(submitURI, userPredict, PredictStats.class).getBody();
+        Metrics.getInstance().processSubmission(stats);
+        return null;
     }
 }
