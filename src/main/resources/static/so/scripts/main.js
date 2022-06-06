@@ -315,6 +315,31 @@ function ModalSearchClose() {
     ManualTagElement.innerHTML = '';
 }
 
-function SubmitSearch(){
+function SubmitSearch() {
+    const allTags = UserChoiceModel.concat(UserChoiceSelection, UserChoiceManual);
+    console.log(allTags);
+    $.ajax({
+        type: "PUT",
+        async: false,
+        url: "./api/submit",
+        data: JSON.stringify({"title": LastQuery, "result": allTags}),
+        contentType: "application/json",
+        success: handleResultSubmit,
+        error: handleErrorSubmit
+    });
+}
 
+function handleResultSubmit(_) {
+    UserChoiceModel = [];
+    UserChoiceSelection = [];
+    UserChoiceModel = [];
+    LastQuery = "";
+    const searchElement = document.getElementById("search");
+    searchElement.value = "";
+    const userChoiceElement = document.getElementById("UserChoiceElement");
+    userChoiceElement.replaceChildren();
+}
+
+function handleErrorSubmit(_) {
+    console.log("Error in submit.");
 }
