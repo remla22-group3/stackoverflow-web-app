@@ -108,7 +108,7 @@ function handleResult(res) {
     var tempA = res.result;
     for(var r=0; r<tempA.length; r++)
     {
-        ReceivedTags.push(Tags[tempA[r]]);
+        ReceivedTags.push(tempA[r]);
     }
 
 }
