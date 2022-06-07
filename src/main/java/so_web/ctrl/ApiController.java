@@ -13,12 +13,13 @@ import java.net.URISyntaxException;
 public class ApiController {
 
     private final RestTemplateBuilder rest;
-    private final ModelInfo releaseInfo;
+    private final ModelInfo releaseInfo, shadowInfo;
 
     public ApiController(RestTemplateBuilder rest, Environment env) throws URISyntaxException {
         super();
         this.rest = rest;
         releaseInfo = new ModelInfo(env.getProperty("RELEASE_HOST"));
+        shadowInfo = new ModelInfo(env.getProperty("SHADOW_HOST"));
     }
 
     @GetMapping("/tags")
@@ -30,7 +31,7 @@ public class ApiController {
     @PostMapping("/predict")
     @ResponseBody
     public PredictRes predict(@RequestBody PredictReq predictReq) {
-        Metrics.getInstance().incrementPredictions();
+        Metrics.getInstance().incrementSuggestions();
         return getPrediction(predictReq);
     }
 
@@ -41,9 +42,11 @@ public class ApiController {
     @PutMapping("/submit")
     @ResponseBody
     public Void submit(@RequestBody PredictRes userPredict) {
-        PredictStats stats =
+        PredictStats releaseStats =
                 rest.build().postForEntity(releaseInfo.submitURI, userPredict, PredictStats.class).getBody();
-        Metrics.getInstance().processSubmissionStats(stats);
+        PredictStats shadowStats =
+                rest.build().postForEntity(shadowInfo.submitURI, userPredict, PredictStats.class).getBody();
+        Metrics.getInstance().processSubmissionStats(releaseStats, shadowStats);
         Submissions.getInstance().addSubmission(userPredict);
         return null;
     }
