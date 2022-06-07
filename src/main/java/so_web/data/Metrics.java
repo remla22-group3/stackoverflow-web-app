@@ -3,7 +3,9 @@ package so_web.data;
 public class Metrics {
     private static Metrics INSTANCE = null;
     private int nrPredictions = 0, nrSubmissions = 0;
-    private final PredictStats aggregatePredictStats = new PredictStats();
+    private final PredictStats
+            aggStatsRelease = new PredictStats(),
+            aggStatsShadow = new PredictStats();
 
     public static Metrics getInstance() {
         if (INSTANCE == null) {
@@ -16,9 +18,9 @@ public class Metrics {
         nrPredictions++;
     }
 
-    public void processSubmission(PredictStats predictStats) {
+    public void processSubmissionStats(PredictStats predictStats) {
         nrSubmissions++;
-        aggregatePredictStats.add(predictStats);
+        aggStatsRelease.add(predictStats);
     }
 
     @Override
@@ -31,16 +33,28 @@ public class Metrics {
                 "# TYPE nr_submissions counter\n" +
                 "nr_submissions " + nrSubmissions + "\n\n" +
 
-                "# HELP tot_share_chosen_tags Summed shares of selected tags from predictions for all submissions\n" +
-                "# TYPE tot_share_chosen_tags gauge\n" +
-                "tot_share_chosen_tags " + aggregatePredictStats.shareChosenTags + "\n\n" +
+                "# HELP release_agg_share_chosen_tags Summed shares of selected tags from predictions for all release submissions\n" +
+                "# TYPE release_agg_share_chosen_tags gauge\n" +
+                "release_agg_share_chosen_tags " + aggStatsRelease.shareChosenTags + "\n\n" +
 
-                "# HELP tot_share_manual_tags Summed shares of manually added tags for all submissions\n" +
-                "# TYPE tot_share_manual_tags gauge\n" +
-                "tot_share_manual_tags " + aggregatePredictStats.shareManualTags + "\n\n" +
+                "# HELP release_agg_share_manual_tags Summed shares of manually added tags for all release submissions\n" +
+                "# TYPE release_agg_share_manual_tags gauge\n" +
+                "release_agg_share_manual_tags " + aggStatsRelease.shareManualTags + "\n\n" +
 
-                "# HELP tot_share_new_tags Summed shares of newly added tags for all submissions\n" +
-                "# TYPE tot_share_new_tags gauge\n" +
-                "tot_share_new_tags " + aggregatePredictStats.shareNewTags + "\n\n";
+                "# HELP release_agg_share_new_tags Summed shares of newly added tags for all release submissions\n" +
+                "# TYPE release_agg_share_new_tags gauge\n" +
+                "release_agg_share_new_tags " + aggStatsRelease.shareNewTags + "\n\n" +
+
+                "# HELP shadow_agg_share_chosen_tags Summed shares of selected tags from predictions for all shadow submissions\n" +
+                "# TYPE shadow_agg_share_chosen_tags gauge\n" +
+                "tot_share_chosen_tags " + aggStatsShadow.shareChosenTags + "\n\n" +
+
+                "# HELP shadow_agg_share_manual_tags Summed shares of manually added tags for all shadow submissions\n" +
+                "# TYPE shadow_agg_share_manual_tags gauge\n" +
+                "shadow_agg_share_manual_tags " + aggStatsShadow.shareManualTags + "\n\n" +
+
+                "# HELP shadow_agg_share_new_tags Summed shares of newly added tags for all shadow submissions\n" +
+                "# TYPE shadow_agg_share_new_tags gauge\n" +
+                "shadow_agg_share_new_tags " + aggStatsShadow.shareNewTags + "\n\n";
     }
 }

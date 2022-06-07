@@ -6,7 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import so_web.data.*;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 
 @Controller
@@ -14,21 +13,18 @@ import java.net.URISyntaxException;
 public class ApiController {
 
     private final RestTemplateBuilder rest;
-    private final URI tagsURI, predictURI, submitURI;
+    private final ModelInfo releaseInfo;
 
     public ApiController(RestTemplateBuilder rest, Environment env) throws URISyntaxException {
         super();
         this.rest = rest;
-        String modelHost = env.getProperty("MODEL_HOST");
-        tagsURI = new URI(modelHost + "/tags");
-        predictURI = new URI(modelHost + "/predict");
-        submitURI = new URI(modelHost + "/submit");
+        releaseInfo = new ModelInfo(env.getProperty("RELEASE_HOST"));
     }
 
     @GetMapping("/tags")
     @ResponseBody
     public Tags getTags() {
-       return rest.build().getForEntity(tagsURI, Tags.class).getBody();
+       return rest.build().getForEntity(releaseInfo.tagsURI, Tags.class).getBody();
     }
 
     @PostMapping("/predict")
@@ -39,15 +35,16 @@ public class ApiController {
     }
 
     private PredictRes getPrediction(PredictReq predictReq) {
-        return rest.build().postForEntity(predictURI, predictReq, PredictRes.class).getBody();
+        return rest.build().postForEntity(releaseInfo.predictURI, predictReq, PredictRes.class).getBody();
     }
 
     @PutMapping("/submit")
     @ResponseBody
     public Void submit(@RequestBody PredictRes userPredict) {
         PredictStats stats =
-                rest.build().postForEntity(submitURI, userPredict, PredictStats.class).getBody();
-        Metrics.getInstance().processSubmission(stats);
+                rest.build().postForEntity(releaseInfo.submitURI, userPredict, PredictStats.class).getBody();
+        Metrics.getInstance().processSubmissionStats(stats);
+        Submissions.getInstance().addSubmission(userPredict);
         return null;
     }
 }
