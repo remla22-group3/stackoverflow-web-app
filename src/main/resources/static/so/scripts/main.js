@@ -332,7 +332,7 @@ function SubmitSearch() {
 function handleResultSubmit(_) {
     UserChoiceModel = [];
     UserChoiceSelection = [];
-    UserChoiceModel = [];
+    UserChoiceManual = [];
     LastQuery = "";
     const searchElement = document.getElementById("search");
     searchElement.value = "";
