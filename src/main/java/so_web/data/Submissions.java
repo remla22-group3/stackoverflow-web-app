@@ -1,33 +1,28 @@
 package so_web.data;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.IndexOptions;
-import com.mongodb.client.model.Indexes;
 import org.bson.Document;
-import org.bson.conversions.Bson;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.index.Index;
 
 import java.util.Iterator;
 
 import static com.mongodb.client.model.Projections.include;
 
-public class SubmissionsCollection {
+public class Submissions {
+    private static final String submissionsC = "submissions", titleF = "title", tagsF = "tags";
     private static MongoCollection<Document> submissionsCollection;
-    private static final String titleF = "title", tagsF = "tags";
-    private static final Bson index =
-            Indexes.compoundIndex(Indexes.ascending(titleF), Indexes.ascending(tagsF));
-    private static final IndexOptions indexOptions =  new IndexOptions().unique(true);
 
-    private SubmissionsCollection() {
+    private Submissions() {
     }
 
-    public static void init(String host, String rootPassword) {
-        submissionsCollection = new MongoClient(new MongoClientURI("mongodb://root:" + rootPassword + '@' + host))
-                .getDatabase("so").getCollection("submissions");
-        submissionsCollection.createIndex(index, indexOptions);
+    public static void init(MongoTemplate mongoTemplate) {
+        mongoTemplate.indexOps(submissionsC).ensureIndex(
+                new Index().on(titleF, Sort.Direction.ASC).on(tagsF, Sort.Direction.ASC).unique());
+        submissionsCollection = mongoTemplate.getCollection(submissionsC);
     }
 
     public static void addSubmission(PredictRes newSubmission) {
