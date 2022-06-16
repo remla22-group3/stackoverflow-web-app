@@ -1,5 +1,7 @@
 package so_web.data;
 
+import java.util.List;
+
 public class Tags {
-    public String[] result;
+    public final List<String> result = null;
 }

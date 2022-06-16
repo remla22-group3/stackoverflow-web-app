@@ -20,6 +20,7 @@ public class ApiController {
         this.rest = rest;
         releaseInfo = new ModelInfo(env.getProperty("RELEASE_HOST"));
         shadowInfo = new ModelInfo(env.getProperty("SHADOW_HOST"));
+        SubmissionsCollection.init(env.getProperty("MONGO_HOST"), env.getProperty("MONGO_ROOT_PASS"));
     }
 
     @GetMapping("/tags")
@@ -47,7 +48,7 @@ public class ApiController {
         PredictStats shadowStats =
                 rest.build().postForEntity(shadowInfo.submitURI, userPredict, PredictStats.class).getBody();
         Metrics.getInstance().processSubmissionStats(releaseStats, shadowStats);
-        Submissions.getInstance().addSubmission(userPredict);
+        SubmissionsCollection.addSubmission(userPredict);
         return null;
     }
 }

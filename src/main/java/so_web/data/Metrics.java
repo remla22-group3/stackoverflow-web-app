@@ -7,6 +7,9 @@ public class Metrics {
             aggStatsRelease = new PredictStats(),
             aggStatsShadow = new PredictStats();
 
+    private Metrics() {
+    }
+
     public static Metrics getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new Metrics();
