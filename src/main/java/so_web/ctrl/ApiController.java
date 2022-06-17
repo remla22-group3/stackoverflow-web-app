@@ -2,6 +2,7 @@ package so_web.ctrl;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.env.Environment;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import so_web.data.*;
@@ -15,11 +16,12 @@ public class ApiController {
     private final RestTemplateBuilder rest;
     private final ModelInfo releaseInfo, shadowInfo;
 
-    public ApiController(RestTemplateBuilder rest, Environment env) throws URISyntaxException {
+    public ApiController(RestTemplateBuilder rest, Environment env, MongoTemplate mongoTemplate) throws URISyntaxException {
         super();
         this.rest = rest;
         releaseInfo = new ModelInfo(env.getProperty("RELEASE_HOST"));
         shadowInfo = new ModelInfo(env.getProperty("SHADOW_HOST"));
+        Submissions.init(mongoTemplate);
     }
 
     @GetMapping("/tags")
@@ -47,7 +49,7 @@ public class ApiController {
         PredictStats shadowStats =
                 rest.build().postForEntity(shadowInfo.submitURI, userPredict, PredictStats.class).getBody();
         Metrics.getInstance().processSubmissionStats(releaseStats, shadowStats);
-        Submissions.getInstance().addSubmission(userPredict);
+        Submissions.addSubmission(userPredict);
         return null;
     }
 }

@@ -17,6 +17,6 @@ public class SubmissionsController {
     @GetMapping(produces = "text/plain")
     @ResponseBody
     public String submissions() {
-        return Submissions.getInstance().toString();
+        return Submissions.documentsToTSV();
     }
 }

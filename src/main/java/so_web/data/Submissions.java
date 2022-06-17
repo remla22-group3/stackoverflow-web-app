@@ -1,37 +1,54 @@
 package so_web.data;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import com.mongodb.MongoWriteException;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.index.Index;
+
+import java.util.Iterator;
+
+import static com.mongodb.client.model.Projections.include;
 
 public class Submissions {
-    private static Submissions INSTANCE = null;
-    private final Set<PredictRes> submissionSet = new LinkedHashSet<>();
+    private static final String submissionsC = "submissions", titleF = "title", tagsF = "tags";
+    private static MongoCollection<Document> submissionsCollection;
 
-    public static Submissions getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new Submissions();
+    private Submissions() {
+    }
+
+    public static void init(MongoTemplate mongoTemplate) {
+        mongoTemplate.indexOps(submissionsC).ensureIndex(
+                new Index().on(titleF, Sort.Direction.ASC).on(tagsF, Sort.Direction.ASC).unique());
+        submissionsCollection = mongoTemplate.getCollection(submissionsC);
+    }
+
+    public static void addSubmission(PredictRes newSubmission) {
+        try {
+            submissionsCollection.insertOne(new Document()
+                    .append(titleF, newSubmission.title).append(tagsF, newSubmission.result));
         }
-        return INSTANCE;
+        catch (MongoWriteException ignored) {
+        }
     }
 
-    public void addSubmission(PredictRes newSubmission) {
-        submissionSet.add(newSubmission);
-    }
+    public static String documentsToTSV() {
+        FindIterable<Document> findIt = submissionsCollection.find().projection(include(titleF, tagsF));
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("title\ttags\n");
-        for (PredictRes submission : submissionSet) {
-            sb.append(submission.title).append("\t[");
-            String[] res = submission.result;
-            if (res.length > 0) {
+        StringBuilder sb = new StringBuilder(titleF + '\t' + tagsF + '\n');
+        for (Document document : findIt) {
+            sb.append(document.getString(titleF)).append("\t[");
+            Iterator<String> resIt = document.getList(tagsF, String.class).iterator();
+            if (resIt.hasNext()) {
                 sb.append('\'');
-                sb.append(res[0]);
+                sb.append(resIt.next());
                 sb.append('\'');
             }
-            for (int i = 1; i < res.length; i++) {
+            while (resIt.hasNext()) {
                 sb.append(", '");
-                sb.append(res[i]);
+                sb.append(resIt.next());
                 sb.append('\'');
             }
             sb.append("]\n");
